@@ -1,4 +1,4 @@
-var firebase = require('./firebaseConfig');
+var firebase = require('./firebaseConfigEnv');
 
 const firestore = firebase.firestore();
 const usersRef = firestore.collection('users');
