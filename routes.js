@@ -16,12 +16,14 @@ async function addShift(req, res) {
   var startTime = new Date(req.params.start);
   var endTime = new Date(req.params.end);
   var shiftType = req.params.type;
+  var pushToken = req.params.token;
 
   let shift = {
     userId: userId,
     startTime: startTime,
     endTime: endTime,
-    shiftType: shiftType
+    shiftType: shiftType,
+    pushToken: pushToken
   }
   // //TODO: add error handling
   await db.addShiftDocument(shift);
@@ -36,7 +38,9 @@ async function sendNotifications(req, res) {
     var title = req.params.title;
     var message = req.params.message;
 
-    await notif.sendNotification(tokens, title, message);
+    var pushTokens = tokens.split(',');
+
+    await notif.sendNotification(pushTokens, title, message);
     res.sendStatus(200)
 }  
 
@@ -48,10 +52,22 @@ async function addWhitelistEmail(req, res) {
   res.sendStatus(200)
 }  
 
+
+async function notifyUpcomingShifts() {
+  const timeRangeFromNow = 50000;
+  const shifts = await db.getUpcomingShifts(timeRangeFromNow);
+  console.log(shifts)
+  const tokens = shifts.map(shift => shift.pushToken);
+  const title = "Shift Reminder";
+  const message = "Your shift begins in 10 minutes!"
+  await notif.sendNotification(tokens, title, message);
+}  
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   getMembers: getMembers,
   addShift: addShift,
   sendNotifications: sendNotifications,
-  addWhitelistEmail: addWhitelistEmail
+  addWhitelistEmail: addWhitelistEmail,
+  notifyShifts: notifyUpcomingShifts
 }
