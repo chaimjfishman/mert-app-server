@@ -1,5 +1,5 @@
-var db = require('./db.js');
-var notif = require('./notifications.js');
+var db = require('./utils/db.js');
+var notif = require('./utils/notifications.js');
 
 /* -------------------------------------------------- */
 /* ------------------- Route Handlers --------------- */
