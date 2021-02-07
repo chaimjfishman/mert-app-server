@@ -2,9 +2,7 @@ const { Expo } = require('expo-server-sdk')
 
 let expo = new Expo();
 
-async function sendNotification(pushTokens, title, message) {
-    var tokens = pushTokens.split(',');
-
+async function sendNotification(tokens, title, message) {
     let messages = [];
     for (let pushToken of tokens) {
     // Each push token looks like ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
