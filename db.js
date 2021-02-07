@@ -1,4 +1,4 @@
-var firebase = require('./firebaseConfigEnv');
+var firebase = require('./firebaseConfig');
 
 const firestore = firebase.firestore();
 const usersRef = firestore.collection('users');
@@ -21,10 +21,26 @@ async function addEmail(email) {
     await whitelistRef.doc(email).set({});
 }
 
+async function getUpcomingShifts(minuteRange) {
+    // minuteRange: return all shifts beginning from now up until until now + minuteRange
+    console.log("db getUpcomingShifts  called")
+    const currTime = new Date();
+    const currTimeRange = new Date(currTime.getTime() + minuteRange*60000);
+    const snapshot = await shiftsRef
+        .orderBy("startTime", "asc")
+        .startAt(currTime)
+        .endAt(currTimeRange)
+        .get();
+    const data = snapshot.docs.map(doc => doc.data());
+    data.forEach(doc => doc.startTime = doc.startTime.toDate());
+    data.forEach(doc => doc.endTime = doc.endTime.toDate());
+    return data;
+}
+
 
 module.exports = {
     getAllMembers: getAllMembers,
     addShiftDocument: addShiftDocument,
-    addEmail: addEmail
-    
+    addEmail: addEmail,
+    getUpcomingShifts: getUpcomingShifts
 }
