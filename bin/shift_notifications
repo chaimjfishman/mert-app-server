@@ -1,5 +1,6 @@
 #! /app/.heroku/node/bin/node
-function notifyUpcomingShifts() {
+var notif = require('./utils/notifications.js');
+async function notifyUpcomingShifts() {
     console.log('yooooooooo')
     const tokens = ['ExponentPushToken[0Bnu9mLhNd4t-QVeTfNMPE]'];
     const title = "Shift Reminder";
