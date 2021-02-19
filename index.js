@@ -25,6 +25,8 @@ app.get('/whitelist/:email', routes.addWhitelistEmail);
 
 app.get('/test', (req, res) => {res.send('Server Up!!')});
 
+app.get('/testnotifications', routes.testNotification);
+
 
 app.listen(process.env.PORT || 8081, () => {
 	console.log(`Server listening on PORT 8081`);

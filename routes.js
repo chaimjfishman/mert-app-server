@@ -54,7 +54,7 @@ async function addWhitelistEmail(req, res) {
 
 
 async function notifyUpcomingShifts() {
-  const timeRangeFromNow = 50000;
+  const timeRangeFromNow = 10; //TODO: set proper value
   const shifts = await db.getUpcomingShifts(timeRangeFromNow);
   console.log(shifts)
   const tokens = shifts.map(shift => shift.pushToken);
@@ -63,11 +63,20 @@ async function notifyUpcomingShifts() {
   await notif.sendNotification(tokens, title, message);
 }  
 
+async function testNotification(req, res) {
+  const tokens = ['ExponentPushToken[0Bnu9mLhNd4t-QVeTfNMPE]'];
+  const title = "Shift Reminder";
+  const message = "Your shift begins in 10 minutes!"
+  await notif.sendNotification(tokens, title, message);
+  res.sendStatus(200);
+}
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   getMembers: getMembers,
   addShift: addShift,
   sendNotifications: sendNotifications,
   addWhitelistEmail: addWhitelistEmail,
-  notifyShifts: notifyUpcomingShifts
+  notifyShifts: notifyUpcomingShifts,
+  testNotification: testNotification
 }
