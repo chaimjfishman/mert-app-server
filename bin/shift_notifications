@@ -1,5 +1,5 @@
 #! /app/.heroku/node/bin/node
-var notif = require('./utils/notifications.js');
+var notif = require('../utils/notifications.js');
 async function notifyUpcomingShifts() {
     console.log('yooooooooo')
     const tokens = ['ExponentPushToken[0Bnu9mLhNd4t-QVeTfNMPE]'];
