@@ -12,7 +12,7 @@ async function sendNotification(tokens, title, message) {
             console.error(`Push token ${pushToken} is not a valid Expo push token`);
             continue;
         }
-    
+        console.log('sending notification to ' + pushToken);
         messages.push({
             to: pushToken,
             sound: 'default',

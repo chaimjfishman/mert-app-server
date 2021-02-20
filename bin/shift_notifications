@@ -6,6 +6,7 @@ async function notifyUpcomingShifts() {
     const title = "Shift Reminder";
     const message = "Your shift begins in 10 minutes!"
     await notif.sendNotification(tokens, title, message);
+    console.log('senttttt')
 }
 notifyUpcomingShifts();
 process.exit();
