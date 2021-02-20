@@ -24,7 +24,9 @@ async function sendNotification(tokens, title, message) {
 
     console.log('sending notification')
 
+
     let chunks = expo.chunkPushNotifications(messages);
+    
     let tickets = [];
 
     // Send the chunks to the Expo push notification service. There are
@@ -43,6 +45,7 @@ async function sendNotification(tokens, title, message) {
             console.error(error);
         }
     }
+    console.log('notification seniding competeteee')
 }
 
 
