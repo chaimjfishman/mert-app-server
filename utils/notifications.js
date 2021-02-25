@@ -12,7 +12,6 @@ async function sendNotification(tokens, title, message) {
             console.error(`Push token ${pushToken} is not a valid Expo push token`);
             continue;
         }
-    
         messages.push({
             to: pushToken,
             sound: 'default',
@@ -22,11 +21,12 @@ async function sendNotification(tokens, title, message) {
         })
     }
 
-    console.log('sending notification')
+
 
     let chunks = expo.chunkPushNotifications(messages);
+    
     let tickets = [];
-
+    
     // Send the chunks to the Expo push notification service. There are
     // different strategies you could use. A simple one is to send one chunk at a
     // time, which nicely spreads the load out over time:

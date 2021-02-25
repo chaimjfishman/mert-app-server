@@ -17,15 +17,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/members', routes.getMembers);
 
+
 app.get('/addshift/:userid/:role/:start/:end/:token', routes.addShift);
 
 app.get('/addshiftfromname/:name/:role/:start/:end', routes.addShiftFromName)
+
+// app.get('/addshift/:userid/:type/:start/:end/:token', routes.addShift);
 
 app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
 app.get('/whitelist/:email', routes.addWhitelistEmail);
 
 app.get('/test', (req, res) => {res.send('Server Up!!')});
+
+app.get('/testnotifications', routes.testNotification);
 
 
 app.listen(process.env.PORT || 8081, () => {
