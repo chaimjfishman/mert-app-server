@@ -13,22 +13,63 @@ async function getMembers(req, res) {
 async function addShift(req, res) {
   console.log('addShift called')
   var userId = req.params.userid;
+  var role = req.params.role;
   var startTime = new Date(req.params.start);
   var endTime = new Date(req.params.end);
-  var shiftType = req.params.type;
   var pushToken = req.params.token;
 
   let shift = {
     userId: userId,
+    role: role,
     startTime: startTime,
     endTime: endTime,
-    shiftType: shiftType,
-    pushToken: pushToken
+    pushToken: pushToken,
   }
   // //TODO: add error handling
   await db.addShiftDocument(shift);
   
   console.log(shift)
+  res.sendStatus(200)
+};
+
+function matches(item, name) {
+  return (item.fullName.includes(name.substring(3)));
+ }
+
+async function addShiftFromName(req, res) {
+  console.log('addShiftFromName called')
+  var name = req.params.name;
+  var role = req.params.role;
+  var startTime = new Date(req.params.start);
+  var endTime = new Date(req.params.end);
+  var pushToken = null;
+
+  //set id correctly
+  var members = await db.getAllMembers();
+  var userID = '';
+  members.forEach(item => {
+    if (matches(item, name)) {
+      userID = item.id;
+    }
+  });
+  if (!userID === '') {
+    //set push token correctly
+    console.log(userID);
+    var member = members.find(item=> item.id==userID);
+    console.log(member);
+    var pushToken = member.pushToken != null ? member.pushToken : "default";
+
+    let shift = {
+      userID: userId,
+      role: role,
+      startTime: startTime,
+      endTime: endTime,
+      pushToken: pushToken,
+    }
+    // //TODO: add error handling
+    await db.addShiftDocument(shift);
+    console.log(shift)
+  }  
   res.sendStatus(200)
 };
 
@@ -67,6 +108,7 @@ async function notifyUpcomingShifts() {
 module.exports = {
   getMembers: getMembers,
   addShift: addShift,
+  addShiftFromName: addShiftFromName,
   sendNotifications: sendNotifications,
   addWhitelistEmail: addWhitelistEmail,
   notifyShifts: notifyUpcomingShifts
