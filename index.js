@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/members', routes.getMembers);
 
-app.get('/addshift/:userid/:start/:end/:type/:token', routes.addShift);
+app.get('/addshift/:userid/:type/:start/:end/:token', routes.addShift);
 
 app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
