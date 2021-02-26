@@ -69,8 +69,8 @@ async function addShiftFromName(req, res) {
       pushToken: pushToken,
     }
     // //TODO: add error handling
-    await db.addShiftDocument(shift);
     console.log(shift)
+    await db.addShiftDocument(shift);
   }
   res.sendStatus(200)
 };
