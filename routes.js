@@ -51,13 +51,13 @@ async function addShiftFromName(req, res) {
   var userID = '';
   members.forEach(item => {
     if (matches(item, name)) {
-      userID = item.id;
+      userID = item.userID;
     }
   });
   if (!userID === '') {
     //set push token correctly
     console.log(userID);
-    var member = members.find(item=> item.id==userID);
+    var member = members.find(item=> item.userID==userID);
     console.log(member);
     var pushToken = member.pushToken != null ? member.pushToken : "default";
 
