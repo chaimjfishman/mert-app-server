@@ -11,7 +11,7 @@ node_modules/
 jspm_packages/
 
 #firebase credentials
-firebaseConfig.js
+#firebaseConfig.js
 
 
 .DS_Store
