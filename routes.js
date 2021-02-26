@@ -55,14 +55,17 @@ async function addShiftFromName(req, res) {
     }
   });
   console.log(userID);
-  var member = "default"
+  var member = "default";
   var pushToken = "default";
   if (!userID === 'unknown') {
     //set push token correctly
     member = members.find(item=> item.id==userID);
     console.log('member found');
-    console.log(member)
-    pushToken = member.pushToken != null ? member.pushToken : "default";
+    console.log(member);
+    console.log(member.pushToken);
+    if (member.pushToken) {
+      pushToken = member.pushToken;
+    }
   } 
 
   let shift = {
