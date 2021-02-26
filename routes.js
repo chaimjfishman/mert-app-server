@@ -18,8 +18,10 @@ async function addShift(req, res) {
   var endTime = new Date(req.params.end);
   var pushToken = req.params.token;
 
+  if (!pushToken) pushToken = "dummy";
+
   let shift = {
-    userId: userId,
+    userID: userId,
     role: role,
     startTime: startTime,
     endTime: endTime,
