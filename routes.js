@@ -57,7 +57,7 @@ async function addShiftFromName(req, res) {
   console.log(userID);
   var member = "default";
   var pushToken = "default";
-  if (!userID === 'unknown') {
+  if (userID !== 'unknown') {
     //set push token correctly
     member = members.find(item=> item.id==userID);
     console.log('member found');
