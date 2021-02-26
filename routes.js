@@ -62,7 +62,7 @@ async function addShiftFromName(req, res) {
     var pushToken = member.pushToken != null ? member.pushToken : "default";
 
     let shift = {
-      userID: userId,
+      userID: userID,
       role: role,
       startTime: startTime,
       endTime: endTime,
