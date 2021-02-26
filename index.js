@@ -21,8 +21,6 @@ app.get('/addshift/:userid/:role/:start/:end/:token', routes.addShift);
 
 app.get('/addshiftfromname/:name/:role/:start/:end', routes.addShiftFromName);
 
-// app.get('/addshift/:userid/:type/:start/:end/:token', routes.addShift);
-
 app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
 app.get('/whitelist/:email', routes.addWhitelistEmail);
