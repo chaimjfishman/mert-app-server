@@ -69,7 +69,7 @@ async function addShiftFromName(req, res) {
     // //TODO: add error handling
     await db.addShiftDocument(shift);
     console.log(shift)
-  }  
+  }
   res.sendStatus(200)
 };
 

@@ -1,4 +1,4 @@
-var firebase = require('./firebaseConfigEnv');
+var firebase = require('./firebaseConfig');
 
 const firestore = firebase.firestore();
 const usersRef = firestore.collection('users');
@@ -11,8 +11,7 @@ async function getAllMembers() {
 }
 
 async function addShiftDocument(dataObj) {
-    //TODO: Error handling
-    // Add a new document with a generated id.
+    //first map name to uid using fullName
     await shiftsRef.add(dataObj);
 }
 

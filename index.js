@@ -17,10 +17,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/members', routes.getMembers);
 
-
 app.get('/addshift/:userid/:role/:start/:end/:token', routes.addShift);
 
-app.get('/addshiftfromname/:name/:role/:start/:end', routes.addShiftFromName)
+app.get('/addshiftfromname/:name/:role/:start/:end', routes.addShiftFromName);
 
 // app.get('/addshift/:userid/:type/:start/:end/:token', routes.addShift);
 
