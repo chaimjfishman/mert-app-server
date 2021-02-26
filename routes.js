@@ -66,19 +66,17 @@ async function addShiftFromName(req, res) {
     if (member.pushToken) {
       pushToken = member.pushToken;
     }
+    let shift = {
+      userID: userID,
+      role: role,
+      startTime: startTime,
+      endTime: endTime,
+      pushToken: pushToken,
+    }
+    // //TODO: add error handling
+    await db.addShiftDocument(shift);
   } 
 
-  let shift = {
-    userID: userID,
-    role: role,
-    startTime: startTime,
-    endTime: endTime,
-    pushToken: pushToken,
-  }
-  // //TODO: add error handling
-  console.log(shift)
-  await db.addShiftDocument(shift);
-  
   res.sendStatus(200)
 };
 
