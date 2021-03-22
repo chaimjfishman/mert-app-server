@@ -25,6 +25,10 @@ app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
 app.get('/whitelist/:email', routes.addWhitelistEmail);
 
+app.get('/addform/:url/:title', routes.addForm);
+
+app.get('/addcontact/:name/:number', routes.addContact);
+
 app.get('/test', (req, res) => {res.send('Server Up!!')});
 
 app.get('/testnotifications', routes.testNotification);

@@ -88,12 +88,43 @@ async function sendNotifications(req, res) {
 }  
 
 async function addWhitelistEmail(req, res) {
-  console.log('addWhitelistEmail called')
-  var email = req.params.email;
+    console.log('addWhitelistEmail called')
+    var email = req.params.email;
 
-  await db.addEmail(email);
-  res.sendStatus(200)
-}  
+    await db.addEmail(email);
+    res.sendStatus(200)
+} 
+
+async function addForm(req, res) {
+    console.log('addForm called')
+    var url = req.params.url;
+    var title = req.params.title;
+
+    let form = {
+        url: url,
+        title: title,
+    }
+
+    await db.addForm(form);
+    res.sendStatus(200)
+} 
+
+async function addContact(req, res) {
+    console.log('addContact called')
+    var name = req.params.name;
+    var number = req.params.number;
+
+    let contact = {
+        name: name,
+        number: number,
+    }
+
+    await db.addContact(contact);
+    res.sendStatus(200)
+} 
+
+
+
 
 
 async function notifyUpcomingShifts() {
@@ -121,6 +152,8 @@ module.exports = {
   addShiftFromName: addShiftFromName,
   sendNotifications: sendNotifications,
   addWhitelistEmail: addWhitelistEmail,
+  addForm: addForm,
+  addContact: addContact,
   notifyShifts: notifyUpcomingShifts,
   testNotification: testNotification
 }

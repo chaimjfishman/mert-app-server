@@ -3,6 +3,8 @@ var firebase = require('./firebaseConfig');
 const firestore = firebase.firestore();
 const usersRef = firestore.collection('users');
 const shiftsRef = firestore.collection('shifts');
+const formsRef = firestore.collection('forms');
+const contactsRef = firestore.collection('contacts');
 const whitelistRef = firestore.collection('userWhitelist');
 
 async function getAllMembers() {
@@ -13,6 +15,14 @@ async function getAllMembers() {
 async function addShiftDocument(dataObj) {
     //first map name to uid using fullName
     await shiftsRef.add(dataObj);
+}
+
+async function addForm(dataObj) {
+    await formsRef.add(dataObj);
+}
+
+async function addContact(dataObj) {
+    await contactsRef.add(dataObj);
 }
 
 async function addEmail(email) {
@@ -41,5 +51,7 @@ module.exports = {
     getAllMembers: getAllMembers,
     addShiftDocument: addShiftDocument,
     addEmail: addEmail,
+    addForm: addForm,
+    addContact: addContact,
     getUpcomingShifts: getUpcomingShifts
 }
