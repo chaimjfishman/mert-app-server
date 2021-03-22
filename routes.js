@@ -75,6 +75,12 @@ async function addShiftFromName(req, res) {
   res.sendStatus(200)
 };
 
+
+async function getAllShifts(req, res) {
+  var shifts = await db.getAllShifts();
+  res.json(shifts)
+}
+
 async function sendNotifications(req, res) {
     console.log('sendNotifications called')
     var tokens = req.params.tokens;
@@ -150,6 +156,7 @@ module.exports = {
   getMembers: getMembers,
   addShift: addShift,
   addShiftFromName: addShiftFromName,
+  getAllShifts: getAllShifts,
   sendNotifications: sendNotifications,
   addWhitelistEmail: addWhitelistEmail,
   addForm: addForm,

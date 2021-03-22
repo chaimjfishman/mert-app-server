@@ -46,10 +46,19 @@ async function getUpcomingShifts(minuteRange) {
     return data;
 }
 
+async function getAllShifts(){
+    const snapshot = await shiftsRef.orderBy("startTime", "asc").get();
+    const data = snapshot.docs.map(doc => doc.data());
+    data.forEach(doc => doc.startTime = doc.startTime.toDate());
+    data.forEach(doc => doc.endTime = doc.endTime.toDate());
+    return data;
+}
+
 
 module.exports = {
     getAllMembers: getAllMembers,
     addShiftDocument: addShiftDocument,
+    getAllShifts: getAllShifts,
     addEmail: addEmail,
     addForm: addForm,
     addContact: addContact,
