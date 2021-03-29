@@ -20,6 +20,10 @@ async function addShift(req, res) {
 
   if (!pushToken) pushToken = "dummy";
 
+//my stuff rn
+  console.log(req.params.start);
+  console.log(req.params.end);
+
   let shift = {
     userID: userId,
     role: role,
