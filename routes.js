@@ -81,6 +81,14 @@ async function getAllShifts(req, res) {
   res.json(shifts)
 }
 
+async function getShiftsForCalendar(req, res) {
+  var shifts = await db.getAllShiftsForAdminCalendar();
+  res.json(shifts)
+}
+
+
+
+
 async function sendNotifications(req, res) {
     console.log('sendNotifications called')
     var tokens = req.params.tokens;
@@ -157,6 +165,7 @@ module.exports = {
   addShift: addShift,
   addShiftFromName: addShiftFromName,
   getAllShifts: getAllShifts,
+  getShiftsForCalendar: getShiftsForCalendar,
   sendNotifications: sendNotifications,
   addWhitelistEmail: addWhitelistEmail,
   addForm: addForm,

@@ -55,10 +55,32 @@ async function getAllShifts(){
 }
 
 
+async function getAllShiftsForAdminCalendar(){
+    const snapshot = await shiftsRef.orderBy("startTime", "asc").get();
+    const data = snapshot.docs.map(doc => doc.data());
+    data.forEach(doc => doc.startTime = doc.startTime.toDate());
+    data.forEach(doc => doc.endTime = doc.endTime.toDate());
+
+    let shifts = data.map((shiftObj, i) => {
+        return {
+            'id': shiftObj.userID,
+            'start': shiftObj.startTime,
+            'end' : shiftObj.endTime,
+            'title' : shiftObj.role
+        }
+    });
+
+    return shifts;
+}
+
+
+
+
 module.exports = {
     getAllMembers: getAllMembers,
     addShiftDocument: addShiftDocument,
     getAllShifts: getAllShifts,
+    getAllShiftsForAdminCalendar: getAllShiftsForAdminCalendar,
     addEmail: addEmail,
     addForm: addForm,
     addContact: addContact,

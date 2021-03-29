@@ -23,6 +23,8 @@ app.get('/addshiftfromname/:name/:role/:start/:end', routes.addShiftFromName);
 
 app.get('/getallshifts', routes.getAllShifts);
 
+app.get('/calendarshifts', routes.getShiftsForCalendar);
+
 app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
 app.get('/whitelist/:email', routes.addWhitelistEmail);
