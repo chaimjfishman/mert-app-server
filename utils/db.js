@@ -1,8 +1,10 @@
-var firebase = require('./firebaseConfig');
+var firebase = require('./firebaseConfigEnv');
 
 const firestore = firebase.firestore();
 const usersRef = firestore.collection('users');
 const shiftsRef = firestore.collection('shifts');
+const formsRef = firestore.collection('forms');
+const contactsRef = firestore.collection('contacts');
 const whitelistRef = firestore.collection('userWhitelist');
 
 async function getAllMembers() {
@@ -13,6 +15,14 @@ async function getAllMembers() {
 async function addShiftDocument(dataObj) {
     //first map name to uid using fullName
     await shiftsRef.add(dataObj);
+}
+
+async function addForm(dataObj) {
+    await formsRef.add(dataObj);
+}
+
+async function addContact(dataObj) {
+    await contactsRef.add(dataObj);
 }
 
 async function addEmail(email) {
@@ -36,10 +46,43 @@ async function getUpcomingShifts(minuteRange) {
     return data;
 }
 
+async function getAllShifts(){
+    const snapshot = await shiftsRef.orderBy("startTime", "asc").get();
+    const data = snapshot.docs.map(doc => doc.data());
+    data.forEach(doc => doc.startTime = doc.startTime.toDate());
+    data.forEach(doc => doc.endTime = doc.endTime.toDate());
+    return data;
+}
+
+
+async function getAllShiftsForAdminCalendar(){
+    const snapshot = await shiftsRef.orderBy("startTime", "asc").get();
+    const data = snapshot.docs.map(doc => doc.data());
+    data.forEach(doc => doc.startTime = doc.startTime.toDate());
+    data.forEach(doc => doc.endTime = doc.endTime.toDate());
+
+    let shifts = data.map((shiftObj, i) => {
+        return {
+            'id': shiftObj.userID,
+            'start': shiftObj.startTime,
+            'end' : shiftObj.endTime,
+            'title' : shiftObj.role
+        }
+    });
+
+    return shifts;
+}
+
+
+
 
 module.exports = {
     getAllMembers: getAllMembers,
     addShiftDocument: addShiftDocument,
+    getAllShifts: getAllShifts,
+    getAllShiftsForAdminCalendar: getAllShiftsForAdminCalendar,
     addEmail: addEmail,
+    addForm: addForm,
+    addContact: addContact,
     getUpcomingShifts: getUpcomingShifts
 }

@@ -21,9 +21,17 @@ app.get('/addshift/:userid/:role/:start/:end/:token', routes.addShift);
 
 app.get('/addshiftfromname/:name/:role/:start/:end', routes.addShiftFromName);
 
+app.get('/getallshifts', routes.getAllShifts);
+
+app.get('/calendarshifts', routes.getShiftsForCalendar);
+
 app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
 app.get('/whitelist/:email', routes.addWhitelistEmail);
+
+app.get('/addform/:url/:title', routes.addForm);
+
+app.get('/addcontact/:name/:number', routes.addContact);
 
 app.get('/test', (req, res) => {res.send('Server Up!!')});
 
