@@ -122,10 +122,12 @@ async function addForm(req, res) {
     console.log('addForm called')
     var url = req.params.url;
     var title = req.params.title;
+    var ranks = req.params.ranks.split(',');
 
     let form = {
         url: url,
         title: title,
+        availableForRanks: ranks
     }
 
     await db.addForm(form);

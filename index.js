@@ -29,7 +29,7 @@ app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
 app.get('/whitelist/:email', routes.addWhitelistEmail);
 
-app.get('/addform/:url/:title', routes.addForm);
+app.get('/addform/:url/:title/:ranks', routes.addForm);
 
 app.get('/addcontact/:name/:number', routes.addContact);
 
