@@ -20,6 +20,10 @@ async function addShift(req, res) {
 
   if (!pushToken) pushToken = "dummy";
 
+//my stuff rn
+  console.log(req.params.start);
+  console.log(req.params.end);
+
   let shift = {
     userID: userId,
     role: role,
@@ -48,21 +52,26 @@ async function addShiftFromName(req, res) {
 
   //set id correctly
   var members = await db.getAllMembers();
-  var userID = '';
+  var userID = 'unknown';
   members.forEach(item => {
     if (matches(item, name)) {
       userID = item.id;
     }
   });
-  if (!userID === '') {
+  console.log(userID);
+  var member = "default";
+  var pushToken = "default";
+  if (userID !== 'unknown') {
     //set push token correctly
-    console.log(userID);
-    var member = members.find(item=> item.id==userID);
+    member = members.find(item=> item.id==userID);
+    console.log('member found');
     console.log(member);
-    var pushToken = member.pushToken != null ? member.pushToken : "default";
-
+    console.log(member.pushToken);
+    if (member.pushToken) {
+      pushToken = member.pushToken;
+    }
     let shift = {
-      userID: userId,
+      userID: userID,
       role: role,
       startTime: startTime,
       endTime: endTime,
@@ -70,8 +79,8 @@ async function addShiftFromName(req, res) {
     }
     // //TODO: add error handling
     await db.addShiftDocument(shift);
-    console.log(shift)
-  }
+  } 
+
   res.sendStatus(200)
 };
 
