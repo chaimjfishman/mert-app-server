@@ -1,4 +1,4 @@
-var firebase = require('./firebaseConfigEnv');
+var firebase = require('./firebaseConfig');
 
 const firestore = firebase.firestore();
 const usersRef = firestore.collection('users');
@@ -74,6 +74,12 @@ async function getAllShiftsForAdminCalendar(){
 }
 
 
+async function updateRank(uid, rank) {
+    usersRef.doc(uid).update({
+        rank: rank,
+    })
+}
+
 
 
 module.exports = {
@@ -84,5 +90,6 @@ module.exports = {
     addEmail: addEmail,
     addForm: addForm,
     addContact: addContact,
-    getUpcomingShifts: getUpcomingShifts
+    getUpcomingShifts: getUpcomingShifts,
+    updateRank: updateRank
 }

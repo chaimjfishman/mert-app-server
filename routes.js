@@ -137,6 +137,14 @@ async function addContact(req, res) {
     res.sendStatus(200)
 } 
 
+async function updateRank(req, res) {
+  var id = req.params.id;
+  var rank = req.params.rank;
+
+  await db.updateRank(id, rank);
+  res.sendStatus(200)
+}
+
 
 
 
@@ -171,5 +179,6 @@ module.exports = {
   addForm: addForm,
   addContact: addContact,
   notifyShifts: notifyUpcomingShifts,
-  testNotification: testNotification
+  testNotification: testNotification,
+  updateRank: updateRank
 }
