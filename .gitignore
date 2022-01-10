@@ -13,5 +13,8 @@ jspm_packages/
 #firebase credentials
 firebaseConfig.js
 
+# Environment
+.env
+
 
 .DS_Store
