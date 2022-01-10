@@ -39,6 +39,8 @@ app.get('/testnotifications', routes.testNotification);
 
 app.get('/updaterank/:id/:rank', routes.updateRank);
 
+app.get('/updateBoardPos/:id/:rank', routes.updateBoardPos)
+
 
 app.listen(process.env.PORT || 8081, () => {
 	console.log(`Server listening on PORT 8081`);

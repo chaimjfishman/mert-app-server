@@ -80,6 +80,12 @@ async function updateRank(uid, rank) {
     })
 }
 
+async function updateBoardPos(uid, pos) {
+    usersRef.doc(uid).update({
+        boardPosition: pos
+    });
+}
+
 
 
 module.exports = {
@@ -91,5 +97,6 @@ module.exports = {
     addForm: addForm,
     addContact: addContact,
     getUpcomingShifts: getUpcomingShifts,
-    updateRank: updateRank
+    updateRank: updateRank,
+    updateBoardPos: updateBoardPos
 }

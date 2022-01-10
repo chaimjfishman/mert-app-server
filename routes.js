@@ -156,6 +156,14 @@ async function updateRank(req, res) {
   res.sendStatus(200)
 }
 
+async function updateBoardPos(req, res) {
+  var id = req.params.id;
+  var pos = req.params.rank;
+
+  await db.updateBoardPos(id, pos);
+  res.sendStatus(200);
+}
+
 
 
 
@@ -191,5 +199,6 @@ module.exports = {
   addContact: addContact,
   notifyShifts: notifyUpcomingShifts,
   testNotification: testNotification,
-  updateRank: updateRank
+  updateRank: updateRank,
+  updateBoardPos: updateBoardPos
 }
