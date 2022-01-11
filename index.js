@@ -14,12 +14,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 /* ------------------- Route handler registration ----------------- */
 /* ---------------------------------------------------------------- */
 
-
+// Retrieve endpoints
 app.get('/members', routes.getMembers);
-
-app.get('/addshift/:userid/:role/:start/:end/:token', routes.addShift);
-
-app.get('/addshiftfromname/:name/:role/:start/:end', routes.addShiftFromName);
 
 app.get('/getallshifts', routes.getAllShifts);
 
@@ -27,20 +23,26 @@ app.get('/calendarshifts', routes.getShiftsForCalendar);
 
 app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
-app.get('/whitelist/:email', routes.addWhitelistEmail);
+// Create (data object) endpoints
+app.post('/whitelist', routes.addWhitelistEmail);
 
-app.get('/addform/:url/:title/:ranks', routes.addForm);
+app.post('/addform', routes.addForm);
 
-app.get('/addcontact/:name/:number', routes.addContact);
+app.post('/addcontact', routes.addContact);
 
+app.post('/addshift', routes.addShift);
+
+app.post('/addshiftfromname', routes.addShiftFromName);
+
+// Update endpoints
+app.put('/updaterank', routes.updateRank);
+
+app.put('/updateBoardPos', routes.updateBoardPos)
+
+// Test endpoints
 app.get('/test', (req, res) => {res.send('Server Up!!')});
 
 app.get('/testnotifications', routes.testNotification);
-
-app.get('/updaterank/:id/:rank', routes.updateRank);
-
-app.get('/updateBoardPos/:id/:rank', routes.updateBoardPos)
-
 
 app.listen(process.env.PORT || 8081, () => {
 	console.log(`Server listening on PORT 8081`);

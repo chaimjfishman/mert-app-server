@@ -12,17 +12,17 @@ async function getMembers(req, res) {
 
 async function addShift(req, res) {
   console.log('addShift called')
-  var userId = req.params.userid;
-  var role = req.params.role;
-  var startTime = new Date(req.params.start);
-  var endTime = new Date(req.params.end);
-  var pushToken = req.params.token;
+  var userId = req.body.userid;
+  var role = req.body.role;
+  var startTime = new Date(req.body.start);
+  var endTime = new Date(req.body.end);
+  var pushToken = req.body.token;
 
   if (!pushToken) pushToken = "dummy";
 
 //my stuff rn
-  console.log(req.params.start);
-  console.log(req.params.end);
+  console.log(startTime);
+  console.log(endTime);
 
   let shift = {
     userID: userId,
@@ -44,10 +44,10 @@ function matches(item, name) {
 
 async function addShiftFromName(req, res) {
   console.log('addShiftFromName called')
-  var name = req.params.name;
-  var role = req.params.role;
-  var startTime = new Date(req.params.start);
-  var endTime = new Date(req.params.end);
+  var name = req.body.name;
+  var role = req.body.role;
+  var startTime = new Date(req.body.start);
+  var endTime = new Date(req.body.end);
   var pushToken = null;
 
   //set id correctly
@@ -112,7 +112,7 @@ async function sendNotifications(req, res) {
 
 async function addWhitelistEmail(req, res) {
     console.log('addWhitelistEmail called')
-    var email = req.params.email;
+    var email = req.body.email;
 
     await db.addEmail(email);
     res.sendStatus(200)
@@ -120,9 +120,9 @@ async function addWhitelistEmail(req, res) {
 
 async function addForm(req, res) {
     console.log('addForm called')
-    var url = req.params.url;
-    var title = req.params.title;
-    var ranks = req.params.ranks.split(',');
+    var url = req.body.url;
+    var title = req.body.title;
+    var ranks = req.body.ranks.split(',');
 
     let form = {
         url: url,
@@ -136,8 +136,10 @@ async function addForm(req, res) {
 
 async function addContact(req, res) {
     console.log('addContact called')
-    var name = req.params.name;
-    var number = req.params.number;
+    var name = req.body.name;
+    var number = req.body.number;
+    console.log(name)
+    console.log(number)
 
     let contact = {
         name: name,
@@ -149,16 +151,16 @@ async function addContact(req, res) {
 } 
 
 async function updateRank(req, res) {
-  var id = req.params.id;
-  var rank = req.params.rank;
+  var id = req.body.id;
+  var rank = req.body.rank;
 
   await db.updateRank(id, rank);
   res.sendStatus(200)
 }
 
 async function updateBoardPos(req, res) {
-  var id = req.params.id;
-  var pos = req.params.rank;
+  var id = req.body.id;
+  var pos = req.body.pos;
 
   await db.updateBoardPos(id, pos);
   res.sendStatus(200);
