@@ -166,6 +166,20 @@ async function updateBoardPos(req, res) {
   res.sendStatus(200);
 }
 
+async function deleteMember(req, res) {
+  var id = req.params.id;
+
+  await db.deleteMember(id);
+  res.sendStatus(200);
+}
+
+async function removeEmailFromWhitelist(req, res) {
+  var email = req.params.email
+
+  await db.removeEmailFromWhitelist(email);
+  res.sendStatus(200);
+}
+
 
 
 
@@ -202,5 +216,7 @@ module.exports = {
   notifyShifts: notifyUpcomingShifts,
   testNotification: testNotification,
   updateRank: updateRank,
-  updateBoardPos: updateBoardPos
+  updateBoardPos: updateBoardPos,
+  deleteMember: deleteMember,
+  removeEmailFromWhitelist: removeEmailFromWhitelist
 }

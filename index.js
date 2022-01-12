@@ -37,7 +37,12 @@ app.post('/addshiftfromname', routes.addShiftFromName);
 // Update endpoints
 app.put('/updaterank', routes.updateRank);
 
-app.put('/updateBoardPos', routes.updateBoardPos)
+app.put('/updateBoardPos', routes.updateBoardPos);
+
+// Delete endpoints
+app.delete('/members/:id', routes.deleteMember);
+
+app.delete('/whitelist/:email', routes.removeEmailFromWhitelist);
 
 // Test endpoints
 app.get('/test', (req, res) => {res.send('Server Up!!')});

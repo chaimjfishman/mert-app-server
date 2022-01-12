@@ -86,6 +86,18 @@ async function updateBoardPos(uid, pos) {
     });
 }
 
+async function deleteMember(uid) {
+    // Remove user from database and email from whitelist
+
+    // TODO: Need error hadnling here (and pretty much everywhere)
+    const user = await usersRef.doc(uid).get();
+    await removeEmailFromWhitelist(user.data().email);
+    await usersRef.doc(uid).delete();
+}
+
+async function removeEmailFromWhitelist(email) {
+    await whitelistRef.doc(email).delete();
+}
 
 
 module.exports = {
@@ -98,5 +110,7 @@ module.exports = {
     addContact: addContact,
     getUpcomingShifts: getUpcomingShifts,
     updateRank: updateRank,
-    updateBoardPos: updateBoardPos
+    updateBoardPos: updateBoardPos,
+    deleteMember: deleteMember,
+    removeEmailFromWhitelist: removeEmailFromWhitelist
 }
