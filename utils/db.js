@@ -1,4 +1,6 @@
 var firebase = require('./firebaseConfigEnv');
+var admin = require("firebase-admin");
+var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
 const firestore = firebase.firestore();
 const usersRef = firestore.collection('users');
@@ -6,6 +8,13 @@ const shiftsRef = firestore.collection('shifts');
 const formsRef = firestore.collection('forms');
 const contactsRef = firestore.collection('contacts');
 const whitelistRef = firestore.collection('userWhitelist');
+
+// Initialize firebase service account
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: 'https://mert-app-5ce19.firebaseio.com/',
+});
+const auth = admin.auth()
 
 async function getAllMembers() {
     const snapshot = await usersRef.get();
@@ -91,8 +100,25 @@ async function deleteMember(uid) {
 
     // TODO: Need error hadnling here (and pretty much everywhere)
     const user = await usersRef.doc(uid).get();
-    await removeEmailFromWhitelist(user.data().email);
+    const email = user.data().email;
+    await removeEmailFromWhitelist(email);
     await usersRef.doc(uid).delete();
+
+    // Delete user on firebase side
+    auth
+    .getUserByEmail(email)
+    .then((userRecord) => {
+        auth.deleteUser(userRecord.uid)
+        .then(() => {
+            console.log("User deleted")
+        })
+        .catch((err)=> {
+            console.log("Error deleting user on firebase side: ", err)
+        })
+    })
+    .catch((error) => {
+        console.log('Error fetching user data:', error);
+    });
 }
 
 async function removeEmailFromWhitelist(email) {
