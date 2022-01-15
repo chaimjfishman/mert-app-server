@@ -1,20 +1,20 @@
-var firebase = require('./firebaseConfigEnv');
+require('dotenv').config();
 var admin = require("firebase-admin");
 var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-
-const firestore = firebase.firestore();
-const usersRef = firestore.collection('users');
-const shiftsRef = firestore.collection('shifts');
-const formsRef = firestore.collection('forms');
-const contactsRef = firestore.collection('contacts');
-const whitelistRef = firestore.collection('userWhitelist');
 
 // Initialize firebase service account
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: 'https://mert-app-5ce19.firebaseio.com/',
+    databaseURL: process.env.DB_URL,
 });
 const auth = admin.auth()
+const db = admin.firestore();
+
+const usersRef = db.collection('users');
+const shiftsRef = db.collection('shifts');
+const formsRef = db.collection('forms');
+const contactsRef = db.collection('contacts');
+const whitelistRef = db.collection('userWhitelist');
 
 async function getAllMembers() {
     const snapshot = await usersRef.get();
