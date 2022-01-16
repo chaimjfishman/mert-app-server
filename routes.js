@@ -1,9 +1,44 @@
 var db = require('./utils/db.js');
 var notif = require('./utils/notifications.js');
+var fetch = require('node-fetch')
+var jwt = require('jsonwebtoken')
 
 /* -------------------------------------------------- */
 /* ------------------- Route Handlers --------------- */
 /* -------------------------------------------------- */
+
+async function login(req, res) {
+  const dat = JSON.stringify({
+    email: req.body.email,
+    password: req.body.password
+  });
+
+  // Check user credentials against google api
+  const gres = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.FB_API_KEY}`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: dat
+  });
+
+  // If okay and user has admin access, administer token
+  if (gres.status == 200) {
+    const user = await db.getUserByEmail(req.body.email);
+    console.log(user)
+    if (user.admin == true) {
+      const token = jwt.sign({}, process.env.TOKEN_SECRET, {expiresIn: '2h'});
+      res.status(200).json({
+        userId: user.id,
+        token: token
+      })
+    } else {
+      res.sendStatus(403)
+    }
+  } else {
+    res.sendStatus(403)
+  };
+}
 
 async function getMembers(req, res) {
   var members = await db.getAllMembers();
@@ -204,6 +239,7 @@ async function testNotification(req, res) {
 
 // The exported functions, which can be accessed in index.js.
 module.exports = {
+  login: login,
   getMembers: getMembers,
   addShift: addShift,
   addShiftFromName: addShiftFromName,
@@ -218,5 +254,6 @@ module.exports = {
   updateRank: updateRank,
   updateBoardPos: updateBoardPos,
   deleteMember: deleteMember,
-  removeEmailFromWhitelist: removeEmailFromWhitelist
+  removeEmailFromWhitelist: removeEmailFromWhitelist,
+  login: login
 }

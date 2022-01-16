@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 var routes = require("./routes.js");
 const cors = require('cors');
+var middleware = require('./utils/middleware')
 
 const app = express();
 
@@ -13,6 +14,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 /* ---------------------------------------------------------------- */
 /* ------------------- Route handler registration ----------------- */
 /* ---------------------------------------------------------------- */
+
+// Auth endpoint
+app.post('/login', routes.login)
+
+// Use auth middleware after login endpoint
+app.use(middleware.auth)
 
 // Retrieve endpoints
 app.get('/members', routes.getMembers);

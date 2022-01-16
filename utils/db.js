@@ -125,6 +125,20 @@ async function removeEmailFromWhitelist(email) {
     await whitelistRef.doc(email).delete();
 }
 
+async function getUserByEmail(email) {
+    const snap = await usersRef.where('email', '==', email).get();
+    const docs = []
+
+    snap.forEach(doc => {
+        docs.push(doc.data())
+    });
+
+    if (docs.length == 0) {
+        return null;
+    } else {
+        return docs[0]
+    }
+}
 
 module.exports = {
     getAllMembers: getAllMembers,
@@ -138,5 +152,6 @@ module.exports = {
     updateRank: updateRank,
     updateBoardPos: updateBoardPos,
     deleteMember: deleteMember,
-    removeEmailFromWhitelist: removeEmailFromWhitelist
+    removeEmailFromWhitelist: removeEmailFromWhitelist,
+    getUserByEmail: getUserByEmail
 }
