@@ -13,5 +13,11 @@ jspm_packages/
 #firebase credentials
 firebaseConfig.js
 
+# Environment
+.env
+
+# Service account secrets in json
+mert-app-5ce19-firebase-adminsdk-jtvtl-baa5a741f3.json
+
 
 .DS_Store

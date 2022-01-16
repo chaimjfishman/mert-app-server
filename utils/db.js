@@ -1,11 +1,20 @@
-var firebase = require('./firebaseConfigEnv');
+require('dotenv').config();
+var admin = require("firebase-admin");
+var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
-const firestore = firebase.firestore();
-const usersRef = firestore.collection('users');
-const shiftsRef = firestore.collection('shifts');
-const formsRef = firestore.collection('forms');
-const contactsRef = firestore.collection('contacts');
-const whitelistRef = firestore.collection('userWhitelist');
+// Initialize firebase service account
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: process.env.DB_URL,
+});
+const auth = admin.auth()
+const db = admin.firestore();
+
+const usersRef = db.collection('users');
+const shiftsRef = db.collection('shifts');
+const formsRef = db.collection('forms');
+const contactsRef = db.collection('contacts');
+const whitelistRef = db.collection('userWhitelist');
 
 async function getAllMembers() {
     const snapshot = await usersRef.get();
@@ -80,7 +89,56 @@ async function updateRank(uid, rank) {
     })
 }
 
+async function updateBoardPos(uid, pos) {
+    usersRef.doc(uid).update({
+        boardPosition: pos
+    });
+}
 
+async function deleteMember(uid) {
+    // Remove user from database and email from whitelist
+
+    // TODO: Need error hadnling here (and pretty much everywhere)
+    const user = await usersRef.doc(uid).get();
+    const email = user.data().email;
+    await removeEmailFromWhitelist(email);
+    await usersRef.doc(uid).delete();
+
+    // Delete user on firebase side
+    auth
+    .getUserByEmail(email)
+    .then((userRecord) => {
+        auth.deleteUser(userRecord.uid)
+        .then(() => {
+            console.log("User deleted")
+        })
+        .catch((err)=> {
+            console.log("Error deleting user on firebase side: ", err)
+        })
+    })
+    .catch((error) => {
+        console.log('Error fetching user data:', error);
+    });
+}
+
+async function removeEmailFromWhitelist(email) {
+    await whitelistRef.doc(email).delete();
+}
+
+async function getUserByEmail(email) {
+    const snap = await usersRef.where('email', '==', email).get();
+    const docs = []
+
+    snap.forEach(doc => {
+        docs.push(doc.data())
+    });
+
+    if (docs.length == 0) {
+        return null;
+    } else {
+        return docs[0]
+    }
+}
 
 module.exports = {
     getAllMembers: getAllMembers,
@@ -91,5 +149,9 @@ module.exports = {
     addForm: addForm,
     addContact: addContact,
     getUpcomingShifts: getUpcomingShifts,
-    updateRank: updateRank
+    updateRank: updateRank,
+    updateBoardPos: updateBoardPos,
+    deleteMember: deleteMember,
+    removeEmailFromWhitelist: removeEmailFromWhitelist,
+    getUserByEmail: getUserByEmail
 }
