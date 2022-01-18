@@ -56,30 +56,29 @@ async function getUpcomingShifts(minuteRange) {
 }
 
 async function getAllShifts(){
-    const snapshot = await shiftsRef.orderBy("startTime", "asc").get();
-    const data = snapshot.docs.map(doc => doc.data());
-    data.forEach(doc => doc.startTime = doc.startTime.toDate());
-    data.forEach(doc => doc.endTime = doc.endTime.toDate());
+    const snapshot = await shiftsRef.orderBy("start", "asc").get();
+    const data = snapshot.docs.map(doc => {
+        const dat = doc.data();
+        dat.id = doc.id;
+        return dat;
+    });
+    data.forEach(dat => dat.start = dat.start.toDate());
+    data.forEach(dat => dat.end = dat.end.toDate());
     return data;
 }
 
 
 async function getAllShiftsForAdminCalendar(){
-    const snapshot = await shiftsRef.orderBy("startTime", "asc").get();
-    const data = snapshot.docs.map(doc => doc.data());
-    data.forEach(doc => doc.startTime = doc.startTime.toDate());
-    data.forEach(doc => doc.endTime = doc.endTime.toDate());
-
-    let shifts = data.map((shiftObj, i) => {
-        return {
-            'id': shiftObj.userID,
-            'start': shiftObj.startTime,
-            'end' : shiftObj.endTime,
-            'title' : shiftObj.role
-        }
+    const snapshot = await shiftsRef.orderBy("start", "asc").get();
+    const data = snapshot.docs.map(doc => {
+        const dat = doc.data();
+        dat.id = doc.id;
+        return dat;
     });
-
-    return shifts;
+    data.forEach(doc => doc.start = doc.start.toDate());
+    data.forEach(doc => doc.end = doc.end.toDate());
+    console.log(data)
+    return data;
 }
 
 

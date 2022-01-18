@@ -25,7 +25,6 @@ async function login(req, res) {
   // If okay and user has admin access, administer token
   if (gres.status == 200) {
     const user = await db.getUserByEmail(req.body.email);
-    console.log(user)
     if (user.admin == true) {
       const token = jwt.sign({}, process.env.TOKEN_SECRET, {expiresIn: '2h'});
       res.status(200).json({
@@ -47,24 +46,27 @@ async function getMembers(req, res) {
 
 async function addShift(req, res) {
   console.log('addShift called')
-  var userId = req.body.userid;
-  var role = req.body.role;
   var startTime = new Date(req.body.start);
   var endTime = new Date(req.body.end);
-  var pushToken = req.body.token;
+  let members = req.body.members;
 
-  if (!pushToken) pushToken = "dummy";
+  // Ensure if token is null, empty string is saved to db
+  members = members.map(obj => {
+    if (!obj.token) {
+      obj.token = "";
+    };
+
+    return obj;
+  })
 
 //my stuff rn
   console.log(startTime);
   console.log(endTime);
 
   let shift = {
-    userID: userId,
-    role: role,
-    startTime: startTime,
-    endTime: endTime,
-    pushToken: pushToken,
+    members: members,
+    start: startTime,
+    end: endTime
   }
   // //TODO: add error handling
   await db.addShiftDocument(shift);
