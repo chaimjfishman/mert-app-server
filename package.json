@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "firebase": "^8.2.4",
     "firebase-admin": "^10.0.1",
+    "googleapis": "^39.2.0",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.6"
   },

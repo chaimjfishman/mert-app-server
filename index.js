@@ -41,6 +41,8 @@ app.post('/addshift', routes.addShift);
 
 app.post('/addshiftfromname', routes.addShiftFromName);
 
+app.post('/shifts/sheets', routes.addShiftsFromSheets);
+
 // Update endpoints
 app.put('/updaterank', routes.updateRank);
 

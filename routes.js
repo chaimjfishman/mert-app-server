@@ -2,6 +2,7 @@ var db = require('./utils/db.js');
 var notif = require('./utils/notifications.js');
 var fetch = require('node-fetch')
 var jwt = require('jsonwebtoken')
+var sheets = require('./utils/sheets')
 
 /* -------------------------------------------------- */
 /* ------------------- Route Handlers --------------- */
@@ -239,6 +240,10 @@ async function testNotification(req, res) {
   res.sendStatus(200);
 }
 
+async function addShiftsFromSheets(req, res) {
+  await sheets.getShifts(req.body.month);
+}
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   login: login,
@@ -257,5 +262,6 @@ module.exports = {
   updateBoardPos: updateBoardPos,
   deleteMember: deleteMember,
   removeEmailFromWhitelist: removeEmailFromWhitelist,
-  login: login
+  login: login,
+  addShiftsFromSheets, addShiftsFromSheets
 }
