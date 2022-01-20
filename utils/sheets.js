@@ -73,18 +73,18 @@ async function getShifts(sheetName) {
             if (Object.keys(cell.effectiveFormat.backgroundColor).length == 0) {
                 // If first item under header is empty or label, skip this header
                 const members = [];
-                const testMember = dat.rowData[j+1].values[k].formattedValue;
-                if (testMember == undefined || testMember == '1A Crew Chief') {
+                const testMember = memberObjFromCell(dat.rowData[j+1].values[k])
+                if (testMember == null || testMember.name == '1A Crew Chief') {
                     continue;
                 } else {
                     members.push(testMember);
                 };
 
                 // search 3 places below testMember to grab other member names
-                let member = ''
+                let member = null;
                 for (let kk=2; kk<5; kk++) {
-                    member = dat.rowData[j+kk].values[k].formattedValue;
-                    if (member != undefined && member != '') {
+                    member = memberObjFromCell(dat.rowData[j+kk].values[k])
+                    if (member != null && member.name != '') {
                         members.push(member);
                     };
                 };
@@ -111,7 +111,9 @@ async function getShifts(sheetName) {
         }
     }
 
-    return shifts;
+
+    // Parse shifts to be more useful for backend later
+    return parseShifts(shifts);
 }
 
 /**
@@ -192,6 +194,104 @@ function headerOffsetToTime(offset, weekend=false) {
         default:
             return null;
     }
+}
+
+/**
+ * 
+ * @param {Obj} cell 
+ * 
+ * Return object with member name, and rank (from color). Return null if color is red (either NEED COVERAGE
+ * or no shift) or formattedValue is empty
+ */
+function memberObjFromCell(cell) {
+    if (cell == null || cell == undefined) {
+        return null;
+    };
+
+    const color = cell.effectiveFormat.backgroundColor;
+    const cl = Object.keys(color).length;
+    const str = cell.formattedValue;
+    let role = '';
+    
+    if (cl == 1 && color.green == 1) {
+        role = 'Crew Chief';
+    } else if (cl == 1 && color.red == 1) {
+        return null;
+    } else if (cl == 2 && color.green == .6 && color.red == 1) {
+        role = 'Lead';
+    } else if (cl == 2 && color.red == 1 && color.green == 1) {
+        role = 'EMT';
+    } else {
+        return null;
+    }
+
+    return {
+        name: str,
+        role
+    };
+}
+
+/**
+ * 
+ * @param {[Obj]} shifts 
+ * @returns shifts
+ * 
+ * Utility function to parse dates and distribute them to members in data structure. Does not add
+ * user data from database such as userId and pushToken.
+ */
+function parseShifts(shifts) {
+    const till_regex = /\wtill\w(\d\d:\d\d)/
+
+    return shifts.map(shift => {
+        // Format start, end into date objects based on date
+        const dChunks = shift.date.split(' ');
+        const year = dChunks[3];
+        const day = dChunks[2].slice(0, -1);
+        const month = dChunks[1];
+
+        shift.start = new Date(`${month} ${day}, ${year} ${shift.start}`);
+        let endTime = shift.end;
+        shift.end = new Date(`${month} ${day}, ${year} ${endTime}`);
+
+        if (shift.end < shift.start) {
+            shift.end = new Date(shift.end.getTime() + 24*60*60*1000);
+        }
+        delete shift.date;
+
+        // For each member, check null and modify in case of special chars
+        let member = null;
+        for (let i=0; i<shift.members.length; i++) {
+            member = shift.members[i];
+
+            if (member == null || member.name.length == 0) {
+                members.splice(i, 1);
+                continue;
+            };
+
+            // Set start, end as shift start, end by default
+            member.start = shift.start;
+            member.end = shift.end;
+            
+            // Check for time modifiers
+            if (member.name.includes('@')) {
+                const nChunks = member.name.split('@');
+                member.name = nChunks[0];
+                member.start = new Date(`${month} ${day}, ${year} ${nChunks[1].trim()}:00`);
+            } else if (till_regex.test(member.name)) {
+                // Try to beat Scunthorpe
+                const tillTime = member.name.match(till_regex)[1];
+                member.name = member.name.replace(till_regex, '');
+                member.end = new Date(`${month} ${day}, ${year} ${tillTime}:00`)
+            }
+
+            // Remove tokens in parenthesis
+            member.name = member.name.replace(/\(.+\)/, '');
+            // Remove asterisks
+            member.name = member.name.replace('*', '');
+        };
+
+        return shift;
+    });
 }
 
 module.exports = {

@@ -241,7 +241,22 @@ async function testNotification(req, res) {
 }
 
 async function addShiftsFromSheets(req, res) {
-  await sheets.getShifts(req.body.month);
+  let shifts = await sheets.getShifts(req.body.month);
+  shifts = await db.addUserDataToShifts(shifts);
+  for (let i=0; i<shifts.length; i++) {
+    await db.addShiftDocument(shifts[i]);
+  }
+
+  res.sendStatus(200);
+}
+
+async function createUser(req, res) {
+  const user = await db.createUser(req.body.email, req.body.password, req.body.fullName);
+  if (user != null && user.id != null) {
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(401);
+  }
 }
 
 // The exported functions, which can be accessed in index.js.
@@ -263,5 +278,6 @@ module.exports = {
   deleteMember: deleteMember,
   removeEmailFromWhitelist: removeEmailFromWhitelist,
   login: login,
-  addShiftsFromSheets, addShiftsFromSheets
+  addShiftsFromSheets, addShiftsFromSheets,
+  createUser: createUser
 }
