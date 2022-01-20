@@ -259,6 +259,15 @@ async function createUser(req, res) {
   }
 }
 
+async function getMemberByEmail(req, res) {
+  const user = await db.getUserByEmail(req.params.email);
+  if (user) {
+    res.json(user);
+  } else {
+    res.sendStatus(404);
+  }
+}
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   login: login,
@@ -279,5 +288,6 @@ module.exports = {
   removeEmailFromWhitelist: removeEmailFromWhitelist,
   login: login,
   addShiftsFromSheets, addShiftsFromSheets,
-  createUser: createUser
+  createUser: createUser,
+  getMemberByEmail: getMemberByEmail
 }

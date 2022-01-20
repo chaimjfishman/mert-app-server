@@ -30,6 +30,8 @@ app.get('/calendarshifts', routes.getShiftsForCalendar);
 
 app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
+app.get('/members/:email', routes.getMemberByEmail);
+
 // Create (data object) endpoints
 app.post('/whitelist', routes.addWhitelistEmail);
 
