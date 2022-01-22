@@ -22,7 +22,14 @@ async function getAllMembers() {
 }
 
 async function addShiftDocument(dataObj) {
-    //first map name to uid using fullName
+    if (!dataObj.memberIds) {
+        const ids = dataObj.members.map(obj => {
+            return obj.id;
+        });
+
+        dataObj.memberIds = ids;
+    };
+
     await shiftsRef.add(dataObj);
 }
 
@@ -154,9 +161,6 @@ async function addUserDataToShifts(shifts) {
         m.fullName = m.fullName.trim();
         return m;
     });
-    console.log(members.map(m => {
-        return {fullName: m.fullName.toLowerCase()}
-    }));
 
     let shiftMember = null;
     let newShifts = shifts.map(shift => {
@@ -213,7 +217,7 @@ async function createUser(email, password, fullName) {
             user.id = res.uid;
             delete user.password;
             delete user.emailVerified;
-            return await usersRef.add(user);
+            return await usersRef.doc(res.uid).set(user);
         }
     } catch (e) {
         return e;
