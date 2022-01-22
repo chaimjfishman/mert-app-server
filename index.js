@@ -57,6 +57,8 @@ app.delete('/members/:id', routes.deleteMember);
 
 app.delete('/whitelist/:email', routes.removeEmailFromWhitelist);
 
+app.delete('/shifts/members/:shiftid/:memberid', routes.removeMemberFromShift)
+
 // Test endpoints
 app.get('/test', (req, res) => {res.send('Server Up!!')});
 

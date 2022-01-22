@@ -218,7 +218,17 @@ async function removeEmailFromWhitelist(req, res) {
   res.sendStatus(200);
 }
 
+async function removeMemberFromShift(req, res) {
+  var shiftId = req.params.shiftId;
+  var userId = req.params.memberId;
 
+  var outcome = await db.removeMemberFromShift(shiftId, userId);
+  if (outcome.error) {
+    res.sendStatus(409);
+  } else {
+    res.sendStatus(200);
+  }
+}
 
 
 
@@ -289,5 +299,6 @@ module.exports = {
   login: login,
   addShiftsFromSheets, addShiftsFromSheets,
   createUser: createUser,
-  getMemberByEmail: getMemberByEmail
+  getMemberByEmail: getMemberByEmail,
+  removeMemberFromShift: removeMemberFromShift
 }

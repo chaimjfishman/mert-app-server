@@ -224,6 +224,30 @@ async function createUser(email, password, fullName) {
     }
 }
 
+async function removeMemberFromShift(shiftId, userId) {
+    try {
+        const shift = await shiftsRef.doc(shiftId).get();
+        console.log(shift);
+        let i = shift.memberIds.indexOf(userId);
+        if (i == -1) {
+            return shift;
+        }
+        shift.memberIds.splice(i, 1);
+
+        for (i=0; i<shift.members.length; i++) {
+            if (shift.members[i].id == userId) {
+                shift.members.splice(i, 1);
+                break;
+            }
+        }
+
+        return await shiftsRef.doc(shiftId).set(shift);
+
+    } catch(e) {
+        return e;
+    }
+}
+
 module.exports = {
     getAllMembers: getAllMembers,
     addShiftDocument: addShiftDocument,
@@ -239,5 +263,6 @@ module.exports = {
     removeEmailFromWhitelist: removeEmailFromWhitelist,
     getUserByEmail: getUserByEmail,
     addUserDataToShifts: addUserDataToShifts,
-    createUser: createUser
+    createUser: createUser,
+    removeMemberFromShift: removeMemberFromShift
 }
