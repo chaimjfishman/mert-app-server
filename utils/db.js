@@ -22,7 +22,14 @@ async function getAllMembers() {
 }
 
 async function addShiftDocument(dataObj) {
-    //first map name to uid using fullName
+    if (!dataObj.memberIds) {
+        const ids = dataObj.members.map(obj => {
+            return obj.id;
+        });
+
+        dataObj.memberIds = ids;
+    };
+
     await shiftsRef.add(dataObj);
 }
 
@@ -56,30 +63,28 @@ async function getUpcomingShifts(minuteRange) {
 }
 
 async function getAllShifts(){
-    const snapshot = await shiftsRef.orderBy("startTime", "asc").get();
-    const data = snapshot.docs.map(doc => doc.data());
-    data.forEach(doc => doc.startTime = doc.startTime.toDate());
-    data.forEach(doc => doc.endTime = doc.endTime.toDate());
+    const snapshot = await shiftsRef.orderBy("start", "asc").get();
+    const data = snapshot.docs.map(doc => {
+        const dat = doc.data();
+        dat.id = doc.id;
+        return dat;
+    });
+    data.forEach(dat => dat.start = dat.start.toDate());
+    data.forEach(dat => dat.end = dat.end.toDate());
     return data;
 }
 
 
 async function getAllShiftsForAdminCalendar(){
-    const snapshot = await shiftsRef.orderBy("startTime", "asc").get();
-    const data = snapshot.docs.map(doc => doc.data());
-    data.forEach(doc => doc.startTime = doc.startTime.toDate());
-    data.forEach(doc => doc.endTime = doc.endTime.toDate());
-
-    let shifts = data.map((shiftObj, i) => {
-        return {
-            'id': shiftObj.userID,
-            'start': shiftObj.startTime,
-            'end' : shiftObj.endTime,
-            'title' : shiftObj.role
-        }
+    const snapshot = await shiftsRef.orderBy("start", "asc").get();
+    const data = snapshot.docs.map(doc => {
+        const dat = doc.data();
+        dat.id = doc.id;
+        return dat;
     });
-
-    return shifts;
+    data.forEach(doc => doc.start = doc.start.toDate());
+    data.forEach(doc => doc.end = doc.end.toDate());
+    return data;
 }
 
 
@@ -140,6 +145,111 @@ async function getUserByEmail(email) {
     }
 }
 
+async function addUserDataToShifts(shifts) {
+    // Firestore does not currently allow query by substring, so retrieve all users and match that way.
+    // Change eventually when store F. Last or overhaul sheets
+    let members = await getAllMembers();
+    members = members.map(m => {
+        const nChunks = m.fullName.split(' ');
+        let last = ''
+        for (let i=1; i<nChunks.length; i++) {
+            last += nChunks[i] + ' ';
+        };
+
+        m.fullName = `${nChunks[0].slice(0, 1)}. ${last}`;
+        m.fullName = m.fullName.trim();
+        return m;
+    });
+
+    let shiftMember = null;
+    let newShifts = shifts.map(shift => {
+        for (let i=0; i<shift.members.length; i++) {
+            shiftMember = shift.members[i];
+            for (let k=0; k<members.length; k++) {
+                if (shiftMember.name.toLowerCase().trim() == members[k].fullName.toLowerCase().trim()) {
+                    shiftMember.id = members[k].id;
+                    shiftMember.token = members[k].pushToken;
+                    if (members[k].rank == 'Probationary EMT') {
+                        shiftMember.role = 'Probationary EMT';
+                    };
+                    delete shiftMember.name;
+                    break;
+                };
+            };
+
+            if (!shiftMember.id) {
+                console.log(`Could not find user entry for ${shiftMember.name.toLowerCase()}`)
+            }
+        };
+
+        return shift;
+    });
+
+    // Remove nulls
+    let finalShifts = [];
+    for (let i=0; i<newShifts.length; i++) {
+        if (newShifts[i] != null) {
+            finalShifts.push(newShifts[i]);
+        };
+    };
+
+    return finalShifts;
+}
+
+async function createUser(email, password, fullName) {
+    const user = {
+        email: email,
+        emailVerified: false,
+        password: password,
+        fullName: fullName,
+        profileImagePath: `profileImages/${email}.png`,
+        rank: 'Probationary EMT',
+        gradYear: null,
+        boardPosition: '',
+        dateJoinedMERT: '',
+        formCompleted: false,
+        takenAthleticShifts: false,
+        pushToken: '',
+        admin: false
+    }
+    
+    try {
+        const res = await auth.createUser(user);
+        if (res.uid) {
+            user.id = res.uid;
+            delete user.password;
+            delete user.emailVerified;
+            return await usersRef.doc(res.uid).set(user);
+        }
+    } catch (e) {
+        return e;
+    }
+}
+
+async function removeMemberFromShift(shiftId, userId) {
+    try {
+        const shift = await shiftsRef.doc(shiftId).get();
+        console.log(shift);
+        let i = shift.memberIds.indexOf(userId);
+        if (i == -1) {
+            return shift;
+        }
+        shift.memberIds.splice(i, 1);
+
+        for (i=0; i<shift.members.length; i++) {
+            if (shift.members[i].id == userId) {
+                shift.members.splice(i, 1);
+                break;
+            }
+        }
+
+        return await shiftsRef.doc(shiftId).set(shift);
+
+    } catch(e) {
+        return e;
+    }
+}
+
 module.exports = {
     getAllMembers: getAllMembers,
     addShiftDocument: addShiftDocument,
@@ -153,5 +263,8 @@ module.exports = {
     updateBoardPos: updateBoardPos,
     deleteMember: deleteMember,
     removeEmailFromWhitelist: removeEmailFromWhitelist,
-    getUserByEmail: getUserByEmail
+    getUserByEmail: getUserByEmail,
+    addUserDataToShifts: addUserDataToShifts,
+    createUser: createUser,
+    removeMemberFromShift: removeMemberFromShift
 }

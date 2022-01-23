@@ -30,6 +30,8 @@ app.get('/calendarshifts', routes.getShiftsForCalendar);
 
 app.get('/notifications/:tokens/:title/:message', routes.sendNotifications);
 
+app.get('/members/:email', routes.getMemberByEmail);
+
 // Create (data object) endpoints
 app.post('/whitelist', routes.addWhitelistEmail);
 
@@ -41,6 +43,10 @@ app.post('/addshift', routes.addShift);
 
 app.post('/addshiftfromname', routes.addShiftFromName);
 
+app.post('/shifts/sheets', routes.addShiftsFromSheets);
+
+app.post('/members', routes.createUser);
+
 // Update endpoints
 app.put('/updaterank', routes.updateRank);
 
@@ -50,6 +56,8 @@ app.put('/updateBoardPos', routes.updateBoardPos);
 app.delete('/members/:id', routes.deleteMember);
 
 app.delete('/whitelist/:email', routes.removeEmailFromWhitelist);
+
+app.delete('/shifts/members/:shiftid/:memberid', routes.removeMemberFromShift)
 
 // Test endpoints
 app.get('/test', (req, res) => {res.send('Server Up!!')});

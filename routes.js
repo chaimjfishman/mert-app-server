@@ -2,6 +2,7 @@ var db = require('./utils/db.js');
 var notif = require('./utils/notifications.js');
 var fetch = require('node-fetch')
 var jwt = require('jsonwebtoken')
+var sheets = require('./utils/sheets')
 
 /* -------------------------------------------------- */
 /* ------------------- Route Handlers --------------- */
@@ -25,7 +26,6 @@ async function login(req, res) {
   // If okay and user has admin access, administer token
   if (gres.status == 200) {
     const user = await db.getUserByEmail(req.body.email);
-    console.log(user)
     if (user.admin == true) {
       const token = jwt.sign({}, process.env.TOKEN_SECRET, {expiresIn: '2h'});
       res.status(200).json({
@@ -47,24 +47,27 @@ async function getMembers(req, res) {
 
 async function addShift(req, res) {
   console.log('addShift called')
-  var userId = req.body.userid;
-  var role = req.body.role;
   var startTime = new Date(req.body.start);
   var endTime = new Date(req.body.end);
-  var pushToken = req.body.token;
+  let members = req.body.members;
 
-  if (!pushToken) pushToken = "dummy";
+  // Ensure if token is null, empty string is saved to db
+  members = members.map(obj => {
+    if (!obj.token) {
+      obj.token = "";
+    };
+
+    return obj;
+  })
 
 //my stuff rn
   console.log(startTime);
   console.log(endTime);
 
   let shift = {
-    userID: userId,
-    role: role,
-    startTime: startTime,
-    endTime: endTime,
-    pushToken: pushToken,
+    members: members,
+    start: startTime,
+    end: endTime
   }
   // //TODO: add error handling
   await db.addShiftDocument(shift);
@@ -215,7 +218,17 @@ async function removeEmailFromWhitelist(req, res) {
   res.sendStatus(200);
 }
 
+async function removeMemberFromShift(req, res) {
+  var shiftId = req.params.shiftId;
+  var userId = req.params.memberId;
 
+  var outcome = await db.removeMemberFromShift(shiftId, userId);
+  if (outcome.error) {
+    res.sendStatus(409);
+  } else {
+    res.sendStatus(200);
+  }
+}
 
 
 
@@ -237,6 +250,34 @@ async function testNotification(req, res) {
   res.sendStatus(200);
 }
 
+async function addShiftsFromSheets(req, res) {
+  let shifts = await sheets.getShifts(req.body.sheet, req.body.range);
+  shifts = await db.addUserDataToShifts(shifts);
+  for (let i=0; i<shifts.length; i++) {
+    await db.addShiftDocument(shifts[i]);
+  }
+
+  res.sendStatus(200);
+}
+
+async function createUser(req, res) {
+  const user = await db.createUser(req.body.email, req.body.password, req.body.fullName);
+  if (user != null && user.id != null) {
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(401);
+  }
+}
+
+async function getMemberByEmail(req, res) {
+  const user = await db.getUserByEmail(req.params.email);
+  if (user) {
+    res.json(user);
+  } else {
+    res.sendStatus(404);
+  }
+}
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   login: login,
@@ -255,5 +296,9 @@ module.exports = {
   updateBoardPos: updateBoardPos,
   deleteMember: deleteMember,
   removeEmailFromWhitelist: removeEmailFromWhitelist,
-  login: login
+  login: login,
+  addShiftsFromSheets, addShiftsFromSheets,
+  createUser: createUser,
+  getMemberByEmail: getMemberByEmail,
+  removeMemberFromShift: removeMemberFromShift
 }
