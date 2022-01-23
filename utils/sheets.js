@@ -4,8 +4,9 @@ var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 /**
  * 
  * @param {String} sheetName: sheet with which to update db (of form "MONTH YEAR")
+ * @param {String} range: Of form "A1:Z100" or "COL'ROW:COL'ROW"
  */
-async function getShifts(sheetName) {
+async function getShifts(sheetName, range) {
     // Get client
     let jwtClient = new google.auth.JWT(
         serviceAccount.client_email,
@@ -29,7 +30,7 @@ async function getShifts(sheetName) {
         {
             auth: jwtClient,
             spreadsheetId: process.env.SCHED_SHEETS_ID,
-            ranges: [`${sheetName}!A1:H22`],
+            ranges: [`${sheetName}!${range}`],
             includeGridData: true
         }
     );
@@ -53,6 +54,10 @@ async function getShifts(sheetName) {
     // Parse row by row
     for (let j=0; j<dat.rowData.length; j++) {
         const rowDat = dat.rowData[j].values;
+
+        if (!rowDat || rowDat == null) {
+            continue;
+        }
 
         // If header row (dates), mark down row number as anchor, then skip
         if (rowDat[1].formattedValue && isFormattedDate(rowDat[1].formattedValue)) {
@@ -240,7 +245,7 @@ function memberObjFromCell(cell) {
  * user data from database such as userId and pushToken.
  */
 function parseShifts(shifts) {
-    const till_regex = /\wtill\w(\d\d:\d\d)/
+    const till_regex = /(till|until)\s(\d\d:\d\d|\d+)/
 
     return shifts.map(shift => {
         // Format start, end into date objects based on date
@@ -275,13 +280,21 @@ function parseShifts(shifts) {
             // Check for time modifiers
             if (member.name.includes('@')) {
                 const nChunks = member.name.split('@');
-                member.name = nChunks[0];
-                member.start = new Date(`${month} ${day}, ${year} ${nChunks[1].trim()}:00`);
+                member.name = nChunks[0].trim();
+                let time = nChunks[1].trim();
+                if (!time.includes(':')) {
+                    time = time.slice(0, 2) + ':' + time.slice(2);
+                };
+
+                member.start = new Date(`${month} ${day}, ${year} ${time.trim()}:00`);
             } else if (till_regex.test(member.name)) {
                 // Try to beat Scunthorpe
-                const tillTime = member.name.match(till_regex)[1];
+                let tillTime = member.name.match(till_regex)[2];
+                if (!tillTime.includes(':')) {
+                    tillTime = tillTime.slice(0, 2) + ':' + tillTime.slice(2);
+                };
                 member.name = member.name.replace(till_regex, '');
-                member.end = new Date(`${month} ${day}, ${year} ${tillTime}:00`)
+                member.end = new Date(`${month} ${day}, ${year} ${tillTime.trim()}:00`)
             }
 
             // Remove tokens in parenthesis

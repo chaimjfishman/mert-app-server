@@ -251,7 +251,7 @@ async function testNotification(req, res) {
 }
 
 async function addShiftsFromSheets(req, res) {
-  let shifts = await sheets.getShifts(req.body.month);
+  let shifts = await sheets.getShifts(req.body.sheet, req.body.range);
   shifts = await db.addUserDataToShifts(shifts);
   for (let i=0; i<shifts.length; i++) {
     await db.addShiftDocument(shifts[i]);

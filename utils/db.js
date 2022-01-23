@@ -84,7 +84,6 @@ async function getAllShiftsForAdminCalendar(){
     });
     data.forEach(doc => doc.start = doc.start.toDate());
     data.forEach(doc => doc.end = doc.end.toDate());
-    console.log(data)
     return data;
 }
 
@@ -170,6 +169,9 @@ async function addUserDataToShifts(shifts) {
                 if (shiftMember.name.toLowerCase().trim() == members[k].fullName.toLowerCase().trim()) {
                     shiftMember.id = members[k].id;
                     shiftMember.token = members[k].pushToken;
+                    if (members[k].rank == 'Probationary EMT') {
+                        shiftMember.role = 'Probationary EMT';
+                    };
                     delete shiftMember.name;
                     break;
                 };
